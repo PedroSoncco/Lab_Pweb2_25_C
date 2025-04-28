@@ -60,12 +60,22 @@
     </style>
 </head>
 <body>
+    
     <div class="container">
-        <h1>Calculadora Aritmética</h1>
+        <h1>Calculadora Aritmética y Lógica</h1>
+        
+        <div class="operation-type">
+            <label>
+                <input type="radio" name="operationType" value="arithmetic" checked> Aritméticas
+            </label>
+            <label>
+                <input type="radio" name="operationType" value="logical"> Lógicas
+            </label>
+        </div>
         
         <div class="form-group">
-            <label for="num1">Primer número:</label>
-            <input type="number" id="num1" placeholder="Ingrese el primer número" step="any">
+            <label for="num1">Primer valor:</label>
+            <input type="text" id="num1" placeholder="Ingrese el primer valor">
         </div>
         
         <div class="form-group">
@@ -81,8 +91,8 @@
         </div>
         
         <div class="form-group">
-            <label for="num2">Segundo número:</label>
-            <input type="number" id="num2" placeholder="Ingrese el segundo número" step="any">
+            <label for="num2">Segundo valor:</label>
+            <input type="text" id="num2" placeholder="Ingrese el segundo valor">
         </div>
         
         <button onclick="calculate()">Calcular</button>
@@ -91,29 +101,82 @@
     </div>
 
     <script>
+        document.querySelectorAll('input[name="operationType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const operatorSelect = document.getElementById('operator');
+                operatorSelect.innerHTML = '';
+                
+                if (this.value === 'arithmetic') {
+                    addOption(operatorSelect, '+', 'Suma (+)');
+                    addOption(operatorSelect, '-', 'Resta (-)');
+                    addOption(operatorSelect, '*', 'Multiplicación (*)');
+                    addOption(operatorSelect, '/', 'División (/)');
+                    addOption(operatorSelect, '%', 'Módulo (%)');
+                    addOption(operatorSelect, '**', 'Potencia (**)');
+                } else if (this.value === 'logical') {
+                    addOption(operatorSelect, '&&', 'AND lógico (&&)');
+                    addOption(operatorSelect, '||', 'OR lógico (||)');
+                    addOption(operatorSelect, '!', 'NOT lógico (!) - Solo primer valor');
+                }
+            });
+        });
+        
+        function addOption(select, value, text) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = text;
+            select.appendChild(option);
+        }
+        
         function calculate() {
-            const num1 = parseFloat(document.getElementById('num1').value);
+            const operationType = document.querySelector('input[name="operationType"]:checked').value;
+            const num1Input = document.getElementById('num1').value;
             const operator = document.getElementById('operator').value;
-            const num2 = parseFloat(document.getElementById('num2').value);
+            const num2Input = document.getElementById('num2').value;
             const resultDiv = document.getElementById('result');
             
             try {
                 let result;
                 let operationDescription = '';
                 
-                switch(operator) {
-                    case '+': result = num1 + num2; break;
-                    case '-': result = num1 - num2; break;
-                    case '*': result = num1 * num2; break;
-                    case '/': result = num2 !== 0 ? num1 / num2 : 'Error: División por cero'; break;
-                    case '%': result = num2 !== 0 ? num1 % num2 : 'Error: Módulo por cero'; break;
-                    case '**': result = Math.pow(num1, num2); break;
-                }
-                
-                if (typeof result === 'number' && !isNaN(result)) {
-                    operationDescription = `${num1} ${operator} ${num2} = ${result}`;
-                } else {
-                    operationDescription = result;
+                if (operationType === 'arithmetic') {
+                    const num1 = parseFloat(num1Input);
+                    const num2 = parseFloat(num2Input);
+                    
+                    switch(operator) {
+                        case '+': result = num1 + num2; break;
+                        case '-': result = num1 - num2; break;
+                        case '*': result = num1 * num2; break;
+                        case '/': result = num2 !== 0 ? num1 / num2 : 'Error: División por cero'; break;
+                        case '%': result = num2 !== 0 ? num1 % num2 : 'Error: Módulo por cero'; break;
+                        case '**': result = Math.pow(num1, num2); break;
+                    }
+                    
+                    if (typeof result === 'number' && !isNaN(result)) {
+                        operationDescription = `${num1} ${operator} ${num2} = ${result}`;
+                    } else {
+                        operationDescription = result;
+                    }
+                } 
+                else if (operationType === 'logical') {
+                    const num1 = Boolean(num1Input);
+                    
+                    if (operator !== '!') {
+                        const num2 = Boolean(num2Input);
+                        switch(operator) {
+                            case '&&': 
+                                result = num1 && num2; 
+                                operationDescription = `${num1} AND ${num2} = ${result}`;
+                                break;
+                            case '||': 
+                                result = num1 || num2; 
+                                operationDescription = `${num1} OR ${num2} = ${result}`;
+                                break;
+                        }
+                    } else {
+                        result = !num1; 
+                        operationDescription = `NOT ${num1} = ${result}`;
+                    }
                 }
                 
                 resultDiv.textContent = operationDescription;
