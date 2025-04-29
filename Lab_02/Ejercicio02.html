@@ -57,12 +57,20 @@
             border-radius: 4px;
             display: none;
         }
+        .operation-type {
+            margin-bottom: 15px;
+        }
+        .operation-type label {
+            display: inline-block;
+            margin-right: 15px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     
     <div class="container">
-        <h1>Calculadora Aritmética y Lógica</h1>
+        <h1>Calculadora de Operaciones</h1>
         
         <div class="operation-type">
             <label>
@@ -70,6 +78,9 @@
             </label>
             <label>
                 <input type="radio" name="operationType" value="logical"> Lógicas
+            </label>
+            <label>
+                <input type="radio" name="operationType" value="bitwise"> De Bits
             </label>
         </div>
         
@@ -117,6 +128,14 @@
                     addOption(operatorSelect, '&&', 'AND lógico (&&)');
                     addOption(operatorSelect, '||', 'OR lógico (||)');
                     addOption(operatorSelect, '!', 'NOT lógico (!) - Solo primer valor');
+                } else if (this.value === 'bitwise') {
+                    addOption(operatorSelect, '&', 'AND a nivel de bits (&)');
+                    addOption(operatorSelect, '|', 'OR a nivel de bits (|)');
+                    addOption(operatorSelect, '^', 'XOR a nivel de bits (^)');
+                    addOption(operatorSelect, '~', 'NOT a nivel de bits (~) - Solo primer valor');
+                    addOption(operatorSelect, '<<', 'Desplazamiento izquierdo (<<)');
+                    addOption(operatorSelect, '>>', 'Desplazamiento derecho (>>)');
+                    addOption(operatorSelect, '>>>', 'Desplazamiento derecho sin signo (>>>)');
                 }
             });
         });
@@ -176,6 +195,44 @@
                     } else {
                         result = !num1; 
                         operationDescription = `NOT ${num1} = ${result}`;
+                    }
+                } 
+                else if (operationType === 'bitwise') {
+                    const num1 = parseInt(num1Input) || 0;
+                    
+                    if (operator !== '~') {
+                        const num2 = parseInt(num2Input) || 0;
+                    }
+                    
+                    switch(operator) {
+                        case '&': 
+                            result = num1 & num2; 
+                            operationDescription = `${num1} & ${num2} = ${result} (Binario: ${num1.toString(2)} & ${num2.toString(2)} = ${result.toString(2)})`;
+                            break;
+                        case '|': 
+                            result = num1 | num2; 
+                            operationDescription = `${num1} | ${num2} = ${result} (Binario: ${num1.toString(2)} | ${num2.toString(2)} = ${result.toString(2)})`;
+                            break;
+                        case '^': 
+                            result = num1 ^ num2; 
+                            operationDescription = `${num1} ^ ${num2} = ${result} (Binario: ${num1.toString(2)} ^ ${num2.toString(2)} = ${result.toString(2)})`;
+                            break;
+                        case '~': 
+                            result = ~num1; 
+                            operationDescription = `~${num1} = ${result} (Binario: ~${num1.toString(2)} = ${result.toString(2)})`;
+                            break;
+                        case '<<': 
+                            result = num1 << num2; 
+                            operationDescription = `${num1} << ${num2} = ${result} (Binario: ${num1.toString(2)} << ${num2} = ${result.toString(2)})`;
+                            break;
+                        case '>>': 
+                            result = num1 >> num2; 
+                            operationDescription = `${num1} >> ${num2} = ${result} (Binario: ${num1.toString(2)} >> ${num2} = ${result.toString(2)})`;
+                            break;
+                        case '>>>': 
+                            result = num1 >>> num2; 
+                            operationDescription = `${num1} >>> ${num2} = ${result} (Binario: ${num1.toString(2)} >>> ${num2} = ${result.toString(2)})`;
+                            break;
                     }
                 }
                 
