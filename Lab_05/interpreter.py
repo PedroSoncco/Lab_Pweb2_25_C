@@ -9,6 +9,20 @@ def draw(picture, scale=1):
         picture: Objeto Picture a dibujar
         scale: Factor de escala (1=normal, 2=doble tamaño, etc.)
     """
+    # Esto lo agregue para limpiar pantalla para mejor visualizacion
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+    # esto escalara la imagen si es necesario
+    scaled_img = []
+    if scale > 1:
+        for row in picture.img:
+            scaled_row = ""
+            for char in row:
+                scaled_row += char * scale
+            for _ in range(scale):
+                scaled_img.append(scaled_row)
+    else:
+        scaled_img = picture.img
     
     # esto dibujara cada línea con colores aproximados
     for row in scaled_img:
