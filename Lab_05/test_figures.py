@@ -1,7 +1,7 @@
 # Aqui estan las imagenes requeridas en los ejercicios propuestos
 
 from chess.picture import Picture
-from chess.pieces import *
+from chess.pieces import KNIGHT, QUEEN, SQUARE, ROCK, BISHOP, KING, PAWN
 from chess.colors import *
 
 def draw(picture):
@@ -9,55 +9,53 @@ def draw(picture):
         print(row)
 
 def figura_a():
-    caballo_blanco = knight
-    caballo_negro = knight.negative()
+    caballo_blanco = Picture(KNIGHT) 
+    caballo_negro = caballo_blanco.negative()
     fila_superior = caballo_blanco.join(caballo_negro)
     fila_inferior = caballo_negro.join(caballo_blanco)
     figura = fila_superior.up(fila_inferior)
     draw(figura)
 
 def figura_b():
-    caballo_blanco = knight
-    caballo_negro = knight.negative()
+    caballo_blanco = Picture(KNIGHT)
+    caballo_negro = caballo_blanco.negative()
     fila_superior = caballo_blanco.join(caballo_negro)
-    # Caballos inferiores con espejo vertical
     fila_inferior = caballo_negro.verticalMirror().join(caballo_blanco.verticalMirror())
     figura = fila_superior.up(fila_inferior)
     draw(figura)
 
 def figura_c():
-    reina_blanca = queen
+    reina_blanca = Picture(QUEEN)
     figura = reina_blanca.horizontalRepeat(4)
     draw(figura)
 
 def figura_d():
-    casillero_negro = square.negative()
-    casillero_blanco = square
+    casillero_negro = Picture(SQUARE).negative()
+    casillero_blanco = Picture(SQUARE)
     patron = casillero_negro.join(casillero_blanco)
     figura = patron.horizontalRepeat(4)
     draw(figura)
 
 def figura_e():
-    casillero_negro = square.negative()
-    casillero_blanco = square
+    casillero_negro = Picture(SQUARE).negative()
+    casillero_blanco = Picture(SQUARE)
     patron = casillero_blanco.join(casillero_negro)
     figura = patron.horizontalRepeat(4)
     draw(figura)
 
 def figura_f():
-    casillero_negro = square.negative()
-    casillero_blanco = square
+    casillero_negro = Picture(SQUARE).negative()
+    casillero_blanco = Picture(SQUARE)
     fila_impar = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
     fila_par = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
     figura = fila_impar.up(fila_par).verticalRepeat(2)
     draw(figura)
 
 def figura_g():
-    # Crear casillas blancas y negras
     casillero_blanco = Picture(SQUARE)
     casillero_negro = Picture(SQUARE).negative()
 
-    fila_piezas_negras = [
+    piezas_negras = [
         Picture(ROCK).negative(),
         Picture(KNIGHT).negative(),
         Picture(BISHOP).negative(),
@@ -68,11 +66,11 @@ def figura_g():
         Picture(ROCK).negative()
     ]
 
-    fila_peones_negros = [Picture(PAWN).negative() for _ in range(8)]
+    peones_negros = [Picture(PAWN).negative() for _ in range(8)]
 
-    fila_peones_blancos = [Picture(PAWN) for _ in range(8)]
+    peones_blancos = [Picture(PAWN) for _ in range(8)]
 
-    fila_piezas_blancas = [
+    piezas_blancas = [
         Picture(ROCK),
         Picture(KNIGHT),
         Picture(BISHOP),
@@ -83,47 +81,68 @@ def figura_g():
         Picture(ROCK)
     ]
 
-    # Construir el tablero completo
-    tablero = []
+    def superponer_pieza(casillero, pieza):
+        casillero_rows = casillero.img
+        pieza_rows = pieza.img
+        if len(casillero_rows) != len(pieza_rows) or len(casillero_rows[0]) != len(pieza_rows[0]):
+            raise ValueError("El casillero y la pieza deben tener las mismas dimensiones")
+        combined_rows = []
+        for cas_row, pz_row in zip(casillero_rows, pieza_rows):
+            combined_row = ''.join([pz_char if pz_char.strip() else cas_char for cas_char, pz_char in zip(cas_row, pz_row)])
+            combined_rows.append(combined_row)
+        return Picture(combined_rows)
 
-    # Fila 1: Piezas negras
-    fila_1 = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
-    piezas_fila_1 = fila_piezas_negras[0]
-    for pieza in fila_piezas_negras[1:]:
-        piezas_fila_1 = piezas_fila_1.join(pieza)
-    tablero.append(piezas_fila_1.up(fila_1))
+    tablero_filas = []
 
-    # Fila 2: Peones negros
-    fila_2 = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
-    peones_fila_2 = fila_peones_negros[0]
-    for peon in fila_peones_negros[1:]:
-        peones_fila_2 = peones_fila_2.join(peon)
-    tablero.append(peones_fila_2.up(fila_2))
+    fila1_casilleros = []
+    for i in range(8):
+        casillero = casillero_negro if i % 2 == 0 else casillero_blanco
+        pieza = superponer_pieza(casillero, piezas_negras[i])
+        fila1_casilleros.append(pieza)
+    fila1 = fila1_casilleros[0]
+    for pieza in fila1_casilleros[1:]:
+        fila1 = fila1.join(pieza)
+    tablero_filas.append(fila1)
 
-    # Filas 3-6: Casillas vacías
-    fila_vacia_1 = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
-    fila_vacia_2 = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
-    for _ in range(2):
-        tablero.append(fila_vacia_1)
-        tablero.append(fila_vacia_2)
+    fila2_casilleros = []
+    for i in range(8):
+        casillero = casillero_blanco if i % 2 == 0 else casillero_negro
+        peon = superponer_pieza(casillero, peones_negros[i])
+        fila2_casilleros.append(peon)
+    fila2 = fila2_casilleros[0]
+    for peon in fila2_casilleros[1:]:
+        fila2 = fila2.join(peon)
+    tablero_filas.append(fila2)
 
-    # Fila 7: Peones blancos
-    fila_7 = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
-    peones_fila_7 = fila_peones_blancos[0]
-    for peon in fila_peones_blancos[1:]:
-        peones_fila_7 = peones_fila_7.join(peon)
-    tablero.append(peones_fila_7.up(fila_7))
+    for fila_num in range(2, 6):
+        if fila_num % 2 == 0:
+            fila = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
+        else:
+            fila = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
+        tablero_filas.append(fila)
 
-    # Fila 8: Piezas blancas
-    fila_8 = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
-    piezas_fila_8 = fila_piezas_blancas[0]
-    for pieza in fila_piezas_blancas[1:]:
-        piezas_fila_8 = piezas_fila_8.join(pieza)
-    tablero.append(piezas_fila_8.up(fila_8))
+    fila7_casilleros = []
+    for i in range(8):
+        casillero = casillero_negro if i % 2 == 0 else casillero_blanco
+        peon = superponer_pieza(casillero, peones_blancos[i])
+        fila7_casilleros.append(peon)
+    fila7 = fila7_casilleros[0]
+    for peon in fila7_casilleros[1:]:
+        fila7 = fila7.join(peon)
+    tablero_filas.append(fila7)
 
-    # Unir todas las filas en un solo tablero
-    tablero_completo = tablero[0]
-    for fila in tablero[1:]:
+    fila8_casilleros = []
+    for i in range(8):
+        casillero = casillero_blanco if i % 2 == 0 else casillero_negro
+        pieza = superponer_pieza(casillero, piezas_blancas[i])
+        fila8_casilleros.append(pieza)
+    fila8 = fila8_casilleros[0]
+    for pieza in fila8_casilleros[1:]:
+        fila8 = fila8.join(pieza)
+    tablero_filas.append(fila8)
+
+    tablero_completo = tablero_filas[0]
+    for fila in tablero_filas[1:]:
         tablero_completo = tablero_completo.up(fila)
 
     draw(tablero_completo)
