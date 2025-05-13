@@ -53,12 +53,80 @@ def figura_f():
     draw(figura)
 
 def figura_g():
-    casillero_negro = square.negative()
-    casillero_blanco = square
-    fila_impar = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
-    fila_par = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
-    tablero = fila_impar.up(fila_par).verticalRepeat(4)
-    draw(tablero)
+    # Crear casillas blancas y negras
+    casillero_blanco = Picture(SQUARE)
+    casillero_negro = Picture(SQUARE).negative()
+
+    fila_piezas_negras = [
+        Picture(ROCK).negative(),
+        Picture(KNIGHT).negative(),
+        Picture(BISHOP).negative(),
+        Picture(QUEEN).negative(),
+        Picture(KING).negative(),
+        Picture(BISHOP).negative(),
+        Picture(KNIGHT).negative(),
+        Picture(ROCK).negative()
+    ]
+
+    fila_peones_negros = [Picture(PAWN).negative() for _ in range(8)]
+
+    fila_peones_blancos = [Picture(PAWN) for _ in range(8)]
+
+    fila_piezas_blancas = [
+        Picture(ROCK),
+        Picture(KNIGHT),
+        Picture(BISHOP),
+        Picture(QUEEN),
+        Picture(KING),
+        Picture(BISHOP),
+        Picture(KNIGHT),
+        Picture(ROCK)
+    ]
+
+    # Construir el tablero completo
+    tablero = []
+
+    # Fila 1: Piezas negras
+    fila_1 = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
+    piezas_fila_1 = fila_piezas_negras[0]
+    for pieza in fila_piezas_negras[1:]:
+        piezas_fila_1 = piezas_fila_1.join(pieza)
+    tablero.append(piezas_fila_1.up(fila_1))
+
+    # Fila 2: Peones negros
+    fila_2 = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
+    peones_fila_2 = fila_peones_negros[0]
+    for peon in fila_peones_negros[1:]:
+        peones_fila_2 = peones_fila_2.join(peon)
+    tablero.append(peones_fila_2.up(fila_2))
+
+    # Filas 3-6: Casillas vacías
+    fila_vacia_1 = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
+    fila_vacia_2 = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
+    for _ in range(2):
+        tablero.append(fila_vacia_1)
+        tablero.append(fila_vacia_2)
+
+    # Fila 7: Peones blancos
+    fila_7 = casillero_negro.join(casillero_blanco).horizontalRepeat(4)
+    peones_fila_7 = fila_peones_blancos[0]
+    for peon in fila_peones_blancos[1:]:
+        peones_fila_7 = peones_fila_7.join(peon)
+    tablero.append(peones_fila_7.up(fila_7))
+
+    # Fila 8: Piezas blancas
+    fila_8 = casillero_blanco.join(casillero_negro).horizontalRepeat(4)
+    piezas_fila_8 = fila_piezas_blancas[0]
+    for pieza in fila_piezas_blancas[1:]:
+        piezas_fila_8 = piezas_fila_8.join(pieza)
+    tablero.append(piezas_fila_8.up(fila_8))
+
+    # Unir todas las filas en un solo tablero
+    tablero_completo = tablero[0]
+    for fila in tablero[1:]:
+        tablero_completo = tablero_completo.up(fila)
+
+    draw(tablero_completo)
 
 # Ejecutar todas las figuras
 if __name__ == "__main__":
